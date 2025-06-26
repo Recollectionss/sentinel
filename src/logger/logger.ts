@@ -1,11 +1,13 @@
-import {LoggerAbstract} from "../core/logger.abstract";
+import { LoggerAbstract } from '../core/logger.abstract';
 
 export class Logger extends LoggerAbstract {
-    log(message: string) {
-        console.log(`[INFO] ${message}`);
-    }
+  log(message: string) {
+    const callerName = this.getCallerName();
+    console.log(`[INFO] [${callerName}]: ${message}`);
+  }
 
-    error(error: Error, context?: string) {
-        console.error(`[ERROR] [${context}]`, error);
-    }
+  error(error: Error) {
+    const callerName = this.getCallerName();
+    console.error(`[ERROR] [${callerName}]`, error);
+  }
 }
