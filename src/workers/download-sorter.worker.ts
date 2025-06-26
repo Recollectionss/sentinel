@@ -3,35 +3,52 @@ import * as os from 'node:os';
 import * as path from 'node:path';
 import fs from 'fs-extra';
 import { FILE_CATEGORY } from '../enums/file-category.enum';
+import chokidar from 'chokidar';
 
 export class DownloadSorterWorker extends WorkerAbstract {
   private downloadsDir = `${os.homedir()}/Downloads`;
   private targetBaseDir = `${this.downloadsDir}/Sentinel`;
+  private ignored = ['.DS_Store', 'ALL', 'Sentinel'];
 
   async init(): Promise<void> {
-    this.logger.log('Start');
+    this.logger.log('Start watching');
     await this.ensureCategories();
+    chokidar
+      .watch(this.downloadsDir, {
+        ignoreInitial: true,
+        awaitWriteFinish: {
+          stabilityThreshold: 500,
+          pollInterval: 100,
+        },
+        depth: 0,
+      })
+      .on('add', async (filePath) => {
+        this.logger.log('See new file');
+        await this.ensureCategories();
+        const pathArr = filePath.split('/');
+        const fileName = pathArr[pathArr.length - 1];
 
-    const files = await fs.readdir(this.downloadsDir);
+        if (this.ignored.includes(filePath)) return;
 
-    for (const fileName of files) {
-      const filePath = path.join(this.downloadsDir, fileName);
-      const ignored = ['.DS_Store', 'ALL', 'Sentinel'];
+        const stat = await fs.stat(filePath);
 
-      if (ignored.includes(fileName)) continue;
+        if (stat.isDirectory()) {
+          const contents = await fs.readdir(filePath);
 
-      if ((await fs.readdir(`${this.downloadsDir}/${fileName}`)).length === 0) {
-        await fs.remove(`${this.downloadsDir}/${fileName}`);
-        this.logger.log(`Remove ${fileName} → Trash}`);
-      }
+          if (contents.length === 0) {
+            await fs.remove(filePath);
+            this.logger.log(`Removed empty directory: ${filePath}`);
+          }
+        }
 
-      const category = this.getCategory(path.extname(fileName).toLowerCase());
-      const targetDir = path.join(this.targetBaseDir, category);
-      const targetPath = path.join(targetDir, fileName);
+        const category = this.getCategory(path.extname(fileName).toLowerCase());
+        const targetDir = path.join(this.targetBaseDir, category);
+        const targetPath = path.join(targetDir, fileName);
 
-      await fs.move(filePath, targetPath, { overwrite: false });
-      this.logger.log(`Moved ${fileName} → ${category}`);
-    }
+        await fs.move(filePath, targetPath, { overwrite: false });
+        this.logger.log(`Moved ${fileName} → ${category}`);
+        this.logger.log('Complete sorting');
+      });
   }
 
   async ensureCategories() {
