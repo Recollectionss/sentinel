@@ -5,11 +5,7 @@ export abstract class WorkerAbstract {
 
   abstract init(): Promise<void>;
 
-  protected async try(action: () => Promise<void>, context: string) {
-    try {
-      await action();
-    } catch (err) {
-      this.logger.error(err as Error, context);
-    }
+  protected async try(action: () => Promise<void>) {
+    await action();
   }
 }

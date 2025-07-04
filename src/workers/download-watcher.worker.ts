@@ -1,4 +1,4 @@
-import { WorkerAbstract } from '../core/worker.abstract';
+import { WorkerAbstract } from '../core/abstract/worker.abstract';
 
 export class DownloadWatcherWorker extends WorkerAbstract {
   init(): Promise<void> {

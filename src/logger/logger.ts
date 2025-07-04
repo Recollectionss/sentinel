@@ -1,4 +1,4 @@
-import { LoggerAbstract } from '../core/logger.abstract';
+import { LoggerAbstract } from '../core/abstract/logger.abstract';
 
 export class Logger extends LoggerAbstract {
   log(message: string) {

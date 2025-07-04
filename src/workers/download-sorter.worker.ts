@@ -1,14 +1,26 @@
-import { WorkerAbstract } from '../core/worker.abstract';
-import * as os from 'node:os';
+import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import * as path from 'node:path';
-import fs from 'fs-extra';
+import fs, { Stats } from 'fs-extra';
 import { FILE_CATEGORY } from '../enums/file-category.enum';
 import chokidar from 'chokidar';
+import { LoggerAbstract } from '../core/abstract/logger.abstract';
+import { Config, ConfigIgnoredT } from '../types/config.types';
+import * as os from 'node:os';
 
 export class DownloadSorterWorker extends WorkerAbstract {
-  private downloadsDir = `${os.homedir()}/Downloads`;
-  private targetBaseDir = `${this.downloadsDir}/Sentinel`;
-  private ignored = ['.DS_Store', 'ALL', 'Sentinel'];
+  private readonly downloadsDir: string;
+  private readonly targetBaseDir: string;
+  private readonly ignored: ConfigIgnoredT;
+
+  constructor(
+    logger: LoggerAbstract,
+    private readonly config: Config,
+  ) {
+    super(logger);
+    this.downloadsDir = os.homedir() + config.watch.main;
+    this.targetBaseDir = `${this.downloadsDir}/Sentinel`;
+    this.ignored = config.ignored;
+  }
 
   async init(): Promise<void> {
     this.logger.log('Start watching');
@@ -22,18 +34,20 @@ export class DownloadSorterWorker extends WorkerAbstract {
         },
         depth: 0,
       })
-      .on('add', async (filePath) => {
+      .on('add', async (filePath: string, stat: Stats | undefined) => {
         this.logger.log('See new file');
         await this.ensureCategories();
-        const pathArr = filePath.split('/');
-        const fileName = pathArr[pathArr.length - 1];
+        const pathArr: string[] = filePath.split('/');
+        const fileName: string = pathArr[pathArr.length - 1];
 
-        if (this.ignored.includes(filePath)) return;
-
-        const stat = await fs.stat(filePath);
+        if (this.ignored.otherIgnored.includes(fileName)) {
+          if (this.ignored.allowMoreIgnored) {
+            return;
+          }
+        }
 
         if (stat.isDirectory()) {
-          const contents = await fs.readdir(filePath);
+          const contents: string[] = await fs.readdir(filePath);
 
           if (contents.length === 0) {
             await fs.remove(filePath);
@@ -41,14 +55,17 @@ export class DownloadSorterWorker extends WorkerAbstract {
           }
         }
 
-        const category = this.getCategory(path.extname(fileName).toLowerCase());
-        const targetDir = path.join(this.targetBaseDir, category);
-        const targetPath = path.join(targetDir, fileName);
+        const category: string = this.getCategory(
+          path.extname(fileName).toLowerCase(),
+        );
+        const targetDir: string = path.join(this.targetBaseDir, category);
+        const targetPath: string = path.join(targetDir, fileName);
 
         await fs.move(filePath, targetPath, { overwrite: false });
         this.logger.log(`Moved ${fileName} → ${category}`);
         this.logger.log('Complete sorting');
       });
+    this.logger.log(`Watch dir: ${this.downloadsDir}`);
   }
 
   async ensureCategories() {
