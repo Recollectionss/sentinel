@@ -1,0 +1,22 @@
+{
+  "watch": {
+    "main": "/Downloads",
+    "optional" : []
+  },
+  "filesCategory": ["Image", "Video", "Archives", "App", "Text"],
+  "sortedRules": {
+    "fileRules": {
+      "Image": [".png", ".jpg", ".jpeg", ".gif", ".aviv"],
+      "Video": [".mp4",".mov",".avi",".mkv"],
+      "Archives": [".zip",".rar",".7z",".tar",".gz"],
+      "Text": [".pdf",".txt",".docs"],
+      "App": [".app"]
+    },
+    "allowOtherDir": true
+  },
+  "ignored": {
+    "required" : [".DS_Store", "Sentinel"],
+    "allowMoreIgnored": true,
+    "otherIgnored": ["ALL"]
+  }
+}
