@@ -1,7 +1,6 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import * as path from 'node:path';
 import fs, { Stats } from 'fs-extra';
-import { FILE_CATEGORY } from '../enums/file-category.enum';
 import chokidar from 'chokidar';
 import { LoggerAbstract } from '../core/abstract/logger.abstract';
 import { Config, ConfigIgnoredT } from '../types/config.types';
@@ -35,18 +34,11 @@ export class DownloadSorterWorker extends WorkerAbstract {
         depth: 0,
       })
       .on('add', async (filePath: string, stat: Stats | undefined) => {
-        this.logger.log('See new file');
-        await this.ensureCategories();
+        this.logger.log(`See new file ${filePath}`);
         const pathArr: string[] = filePath.split('/');
         const fileName: string = pathArr[pathArr.length - 1];
 
-        if (this.ignored.otherIgnored.includes(fileName)) {
-          if (this.ignored.allowMoreIgnored) {
-            return;
-          }
-        }
-
-        if (stat.isDirectory()) {
+        if (stat && stat.isDirectory()) {
           const contents: string[] = await fs.readdir(filePath);
 
           if (contents.length === 0) {
@@ -55,39 +47,53 @@ export class DownloadSorterWorker extends WorkerAbstract {
           }
         }
 
-        const category: string = this.getCategory(
+        if (
+          this.ignored.otherIgnored.includes(fileName) &&
+          this.ignored.allowMoreIgnored
+        ) {
+          return;
+        }
+
+        const category: string | undefined = this.getCategory(
           path.extname(fileName).toLowerCase(),
         );
+
+        if (typeof category === 'undefined') {
+          this.logger.log(
+            `File: ${fileName} cannot be moved, not exist rule or property allowOtherDir = false`,
+          );
+          return;
+        }
         const targetDir: string = path.join(this.targetBaseDir, category);
         const targetPath: string = path.join(targetDir, fileName);
 
-        await fs.move(filePath, targetPath, { overwrite: false });
+        try {
+          await fs.move(filePath, targetPath, { overwrite: false });
+        } catch (err) {
+          this.logger.error(
+            Error(`Failed to move ${fileName}: ${(err as Error).message}`),
+          );
+        }
         this.logger.log(`Moved ${fileName} → ${category}`);
-        this.logger.log('Complete sorting');
       });
-    this.logger.log(`Watch dir: ${this.downloadsDir}`);
   }
 
-  async ensureCategories() {
-    for (const cat of Object.values(FILE_CATEGORY)) {
+  async ensureCategories(): Promise<void> {
+    for (const cat of this.config.filesCategory) {
       await fs.ensureDir(path.join(this.targetBaseDir, cat));
     }
   }
 
-  getCategory(ext: string): string {
-    if (['.jpg', '.jpeg', '.png', '.gif'].includes(ext))
-      return FILE_CATEGORY.IMAGE;
+  getCategory(ext: string): string | undefined {
+    for (const cat of this.config.filesCategory) {
+      if (this.config.sortedRules.fileRules[cat].includes(ext)) {
+        return cat;
+      }
+    }
 
-    if (['.mp4', '.mov', '.avi', '.mkv'].includes(ext))
-      return FILE_CATEGORY.VIDEO;
-
-    if (['.zip', '.rar', '.7z', '.tar', '.gz'].includes(ext))
-      return FILE_CATEGORY.ARCHIVE;
-
-    if (['.pdf', '.txt', '.docs'].includes(ext)) return FILE_CATEGORY.TEXT;
-
-    if (['.app'].includes(ext)) return FILE_CATEGORY.APPLICATION;
-
-    return FILE_CATEGORY.OTHER;
+    if (this.config.sortedRules.allowOtherDir) {
+      return 'Other';
+    }
+    return undefined;
   }
 }

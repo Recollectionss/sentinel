@@ -11,7 +11,6 @@ export class ConfigServiceValidation {
       'utf-8',
     );
     this.config = JSON.parse(raw) as Config;
-    console.log(this.config);
   }
 
   validate(): Config | Error {

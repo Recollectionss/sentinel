@@ -3,12 +3,12 @@
     "main": "/Downloads",
     "optional" : []
   },
-  "filesCategory": ["Image", "Video", "Archives", "App", "Text"],
+  "filesCategory": ["Image", "Video", "Archive", "App", "Text"],
   "sortedRules": {
     "fileRules": {
       "Image": [".png", ".jpg", ".jpeg", ".gif", ".aviv"],
       "Video": [".mp4",".mov",".avi",".mkv"],
-      "Archives": [".zip",".rar",".7z",".tar",".gz"],
+      "Archive": [".zip",".rar",".7z",".tar",".gz"],
       "Text": [".pdf",".txt",".docs"],
       "App": [".app"]
     },
