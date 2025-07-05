@@ -9,3 +9,10 @@ yarn-error.log*
 .pnp.js
 
 .vscode/*
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/dbnavigator.xml
+/.idea/modules.xml
+/package-lock.json
+/.idea/codeStyles/Project.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/sentinel.iml
