@@ -38,6 +38,7 @@ export class FileSorter {
         await fs.remove(filePath);
         this.logger.log(`Removed empty directory: ${filePath}`);
       }
+      return;
     }
 
     const category: string | undefined = this.getCategory(

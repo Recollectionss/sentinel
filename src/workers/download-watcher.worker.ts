@@ -32,7 +32,11 @@ export class DownloadWatcherWorker extends WorkerAbstract {
     }
     this.logger.log('Start watching');
     this.watcher = chokidar
-      .watch(this.downloadsDir)
+      .watch(this.downloadsDir, {
+        ignoreInitial: true,
+        depth: 0,
+        persistent: true,
+      })
       .on('add', async (filePath: string, stat: Stats | undefined) => {
         await this.fileSorter.sort(filePath, stat);
       });
