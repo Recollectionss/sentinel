@@ -7,7 +7,7 @@ export class ConfigServiceValidation {
   constructor() {
     this.configExist();
     const raw: string = fs.readFileSync(
-      path.resolve(__dirname, '../config/config.json'),
+      path.resolve(__dirname, '../../public/config/config.json'),
       'utf-8',
     );
     this.config = JSON.parse(raw) as Config;
@@ -20,7 +20,7 @@ export class ConfigServiceValidation {
   }
 
   private configExist(): void | Error {
-    if (!fs.existsSync(path.resolve(__dirname, '../config/config.json'))) {
+    if (!fs.existsSync(path.resolve(__dirname, '../../public/config/config.json'))) {
       throw new Error(
         `Config file not found at path: ${path.resolve(__dirname, '../config/config.json')}`,
       );
