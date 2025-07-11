@@ -19,7 +19,6 @@ export class FileSorter {
   }
 
   async sort(filePath: string, stat: Stats | undefined): Promise<void> {
-    this.logger.log(`See new file ${filePath}`);
     const pathArr: string[] = filePath.split('/');
     const fileName: string = pathArr[pathArr.length - 1];
 
@@ -57,6 +56,7 @@ export class FileSorter {
     try {
       await fs.move(filePath, targetPath, { overwrite: false });
     } catch (err) {
+      // TODO: need add functional for work with fail move file (for example if him already exist)
       this.logger.error(
         Error(`Failed to move ${fileName}: ${(err as Error).message}`),
       );

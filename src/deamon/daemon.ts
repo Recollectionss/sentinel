@@ -24,10 +24,12 @@ export class Daemon extends DaemonAbstract {
     );
   }
 
-  async init(): Promise<void> {
+  protected async init(): Promise<void> {
     this.logger.log('Initializing...');
     await this.downloadSorterWorker.init();
     await this.downloadWatcherWorker.init();
+
+    this.logger.log('All modules ready...');
   }
 
   async upWatcher() {

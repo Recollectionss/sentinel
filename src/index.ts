@@ -1,3 +1,8 @@
 import { Daemon } from './deamon/daemon';
 
-new Daemon().start();
+async function bootstrap(): Promise<void> {
+  const daemon = new Daemon();
+  await daemon.start();
+}
+
+bootstrap();
