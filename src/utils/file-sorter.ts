@@ -55,13 +55,13 @@ export class FileSorter {
 
     try {
       await fs.move(filePath, targetPath, { overwrite: false });
+      this.logger.log(`Moved ${fileName} → ${category}`);
     } catch (err) {
       // TODO: need add functional for work with fail move file (for example if him already exist)
       this.logger.error(
         Error(`Failed to move ${fileName}: ${(err as Error).message}`),
       );
     }
-    this.logger.log(`Moved ${fileName} → ${category}`);
   }
 
   protected getCategory(ext: string): string | undefined {

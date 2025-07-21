@@ -8,6 +8,6 @@ export class Logger extends LoggerAbstract {
 
   error(error: Error) {
     const callerName = this.getCallerName();
-    console.error(`[ERROR] [${callerName}]`, error);
+    console.error(`[ERROR] [${callerName}]`, error.message);
   }
 }
