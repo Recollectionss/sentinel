@@ -3,7 +3,6 @@
     "main": "/Downloads",
     "optional" : []
   },
-  "filesCategory": ["Image", "Video", "Archive", "App", "Text"],
   "sortedRules": {
     "fileRules": {
       "Image": [".png", ".jpg", ".jpeg", ".gif", ".aviv"],

@@ -1,6 +1,5 @@
 export type Config = {
   watch: ConfigWatchT;
-  filesCategory: string[];
   ignored: ConfigIgnoredT;
   sortedRules: ConfigSortedRulesT;
 };

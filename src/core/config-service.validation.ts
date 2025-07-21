@@ -20,7 +20,9 @@ export class ConfigServiceValidation {
   }
 
   private configExist(): void | Error {
-    if (!fs.existsSync(path.resolve(__dirname, '../../public/config/config.json'))) {
+    if (
+      !fs.existsSync(path.resolve(__dirname, '../../public/config/config.json'))
+    ) {
       throw new Error(
         `Config file not found at path: ${path.resolve(__dirname, '../config/config.json')}`,
       );
@@ -30,18 +32,6 @@ export class ConfigServiceValidation {
   private mainExist(): void | Error {}
 
   private filesAndRules(): void | Error {
-    this.config.filesCategory.forEach((category: string) => {
-      const result: boolean = Object.keys(this.config.sortedRules).includes(
-        category,
-      );
-
-      if (result) {
-        throw new Error(
-          `Sorted rules for category: ${category} not exist please insert needed file categories into app.config.json`,
-        );
-      }
-    });
-
     Object.keys(this.config.sortedRules.fileRules).forEach(
       (ruleName: string) => {
         const countRules: number =
@@ -69,7 +59,7 @@ export class ConfigServiceValidation {
 
     if (ignored.allowMoreIgnored) {
       this.config.ignored.otherIgnored.forEach((item: string) => {
-        if (this.config.filesCategory.includes(item)) {
+        if (Object.keys(this.config.sortedRules).includes(item)) {
           throw new Error(
             `Other ignored file/dir: ${item}  contains in filesCategory`,
           );
