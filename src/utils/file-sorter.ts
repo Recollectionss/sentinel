@@ -55,12 +55,12 @@ export class FileSorter {
     const targetPath: string = path.join(targetDir, fileName);
 
     try {
-      await fs.move(filePath, targetPath, { overwrite: false });
       const color = this.config.sortedRules.rules[category]?.color
         ? +this.config.sortedRules.rules[category].color
         : +TagColors.NONE;
-      console.log(color);
-      await applyTag(targetPath, category, color);
+      await applyTag(filePath, category, color);
+
+      await fs.move(filePath, targetPath, { overwrite: false });
       this.logger.log(`Moved ${fileName} → ${category}`);
     } catch (err) {
       // TODO: need add functional for work with fail move file (for example if him already exist)
