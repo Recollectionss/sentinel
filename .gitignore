@@ -16,3 +16,4 @@ yarn-error.log*
 /.idea/codeStyles/Project.xml
 /.idea/inspectionProfiles/Project_Default.xml
 /.idea/sentinel.iml
+/dist/

@@ -5,12 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "start": "ts-node src/index.ts",
+    "start:prod": "node ./dist/index.js",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "bplist-creator": "^0.1.1",
     "chokidar": "^4.0.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",

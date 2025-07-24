@@ -3,7 +3,6 @@ import { LoggerAbstract } from '../core/abstract/logger.abstract';
 import os from 'node:os';
 import fs, { Stats } from 'fs-extra';
 import path from 'node:path';
-import { applyTag } from '../core/services/tag-service';
 import { TagColors } from '../core/enum/tag-colors.enum';
 
 export class FileSorter {
@@ -58,7 +57,7 @@ export class FileSorter {
       const color = this.config.sortedRules.rules[category]?.color
         ? +this.config.sortedRules.rules[category].color
         : +TagColors.NONE;
-      await applyTag(filePath, category, color);
+      // await applyTag(filePath, category, color);
 
       await fs.move(filePath, targetPath, { overwrite: false });
       this.logger.log(`Moved ${fileName} → ${category}`);
