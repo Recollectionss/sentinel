@@ -1,6 +1,6 @@
 import { LoggerAbstract } from './logger.abstract';
-import { Config } from '../../types/config.types';
-import { ConfigService } from '../config-service';
+import { Config } from '../types/config.types';
+import { ConfigService } from '../services/config-service';
 
 export abstract class DaemonAbstract {
   protected readonly config: Config;

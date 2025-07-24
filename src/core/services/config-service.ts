@@ -1,6 +1,6 @@
 import { Config } from '../types/config.types';
 import { ConfigServiceValidation } from './config-service.validation';
-import { LoggerAbstract } from './abstract/logger.abstract';
+import { LoggerAbstract } from '../abstract/logger.abstract';
 
 export class ConfigService {
   private readonly config: Config;

@@ -1,3 +1,5 @@
+import { TagColors } from '../enum/tag-colors.enum';
+
 export type Config = {
   watch: ConfigWatchT;
   ignored: ConfigIgnoredT;
@@ -10,17 +12,18 @@ export type ConfigWatchT = {
 };
 
 export type ConfigIgnoredT = {
-  required: string[];
-  allowMoreIgnored: boolean;
-  otherIgnored: string[];
+  always: string[];
+  custom: string[];
 };
 
 export type ConfigSortedRulesT = {
-  fileRules: ConfigFileRulesT;
+  rules: ConfigFileRulesT;
   allowOtherDir: boolean;
-  ignoreSentinel: boolean;
 };
 
 export type ConfigFileRulesT = {
-  [key: string]: string[];
+  [key: string]: {
+    color: TagColors;
+    type: string[];
+  };
 };

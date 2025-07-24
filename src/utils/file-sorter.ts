@@ -1,8 +1,10 @@
-import { Config, ConfigIgnoredT } from '../types/config.types';
+import { Config, ConfigIgnoredT } from '../core/types/config.types';
 import { LoggerAbstract } from '../core/abstract/logger.abstract';
 import os from 'node:os';
 import fs, { Stats } from 'fs-extra';
 import path from 'node:path';
+import { applyTag } from '../core/services/tag-service';
+import { TagColors } from '../core/enum/tag-colors.enum';
 
 export class FileSorter {
   private readonly downloadsDir: string;
@@ -23,9 +25,8 @@ export class FileSorter {
     const fileName: string = pathArr[pathArr.length - 1];
 
     if (
-      (this.ignored.otherIgnored.includes(fileName) &&
-        this.ignored.allowMoreIgnored) ||
-      this.ignored.required.includes(fileName)
+      this.ignored.custom.includes(fileName) ||
+      this.ignored.always.includes(fileName)
     ) {
       return;
     }
@@ -55,6 +56,11 @@ export class FileSorter {
 
     try {
       await fs.move(filePath, targetPath, { overwrite: false });
+      const color = this.config.sortedRules.rules[category]?.color
+        ? +this.config.sortedRules.rules[category].color
+        : +TagColors.NONE;
+      console.log(color);
+      await applyTag(targetPath, category, color);
       this.logger.log(`Moved ${fileName} → ${category}`);
     } catch (err) {
       // TODO: need add functional for work with fail move file (for example if him already exist)
@@ -65,8 +71,8 @@ export class FileSorter {
   }
 
   protected getCategory(ext: string): string | undefined {
-    for (const cat of this.config.filesCategory) {
-      if (this.config.sortedRules.fileRules[cat].includes(ext)) {
+    for (const cat of Object.keys(this.config.sortedRules.rules)) {
+      if (this.config.sortedRules.rules[cat].type.includes(ext)) {
         return cat;
       }
     }

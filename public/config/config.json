@@ -4,18 +4,32 @@
     "optional" : []
   },
   "sortedRules": {
-    "fileRules": {
-      "Image": [".png", ".jpg", ".jpeg", ".gif", ".aviv"],
-      "Video": [".mp4",".mov",".avi",".mkv"],
-      "Archive": [".zip",".rar",".7z",".tar",".gz"],
-      "Text": [".pdf",".txt",".docs"],
-      "App": [".app"]
+    "rules": {
+      "Image": {
+        "color": "2",
+        "type": [".png", ".jpg", ".jpeg", ".gif", ".aviv"]
+      },
+      "Video": {
+        "color": "4",
+        "type": [".mp4",".mov",".avi",".mkv"]
+      },
+      "Archive": {
+        "color": "1",
+        "type": [".zip",".rar",".7z",".tar",".gz", ".exe"]
+      },
+      "Text": {
+        "color": "7",
+        "type": [".pdf",".txt",".docs", ".docx", ".pages"]
+      },
+      "App": {
+        "color": "3",
+        "type": [".app"]
+      }
     },
     "allowOtherDir": true
   },
   "ignored": {
-    "required" : [".DS_Store", "Sentinel"],
-    "allowMoreIgnored": true,
-    "otherIgnored": ["ALL"]
+    "always" : [".DS_Store", "Sentinel"],
+    "custom": ["ALL"]
   }
 }

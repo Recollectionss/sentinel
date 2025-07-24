@@ -1,6 +1,6 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import { LoggerAbstract } from '../core/abstract/logger.abstract';
-import { Config } from '../types/config.types';
+import { Config } from '../core/types/config.types';
 import { FileSorter } from '../utils/file-sorter';
 import os from 'node:os';
 import fs, { Stats } from 'fs-extra';
@@ -47,7 +47,7 @@ export class DownloadWatcherWorker extends WorkerAbstract {
   }
 
   async ensureCategories(): Promise<void> {
-    for (const cat of this.config.filesCategory) {
+    for (const cat of Object.keys(this.config.sortedRules.rules)) {
       await fs.ensureDir(path.join(this.targetBaseDir, cat));
     }
   }
