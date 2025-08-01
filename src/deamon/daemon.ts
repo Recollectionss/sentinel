@@ -5,6 +5,7 @@ import { DownloadSorterWorker } from '../workers/download-sorter.worker';
 import { FileSorter } from '../utils/file-sorter';
 import { DownloadWatcherWorker } from '../workers/download-watcher.worker';
 import { TagService } from '../core/services/tag-service';
+import { ensureCategories } from '../utils/ensure-categories';
 
 export class Daemon extends DaemonAbstract {
   protected readonly downloadSorterWorker: WorkerAbstract;
@@ -19,10 +20,7 @@ export class Daemon extends DaemonAbstract {
 
   protected async init(): Promise<void> {
     logger.log('Initializing...');
-    await this.downloadSorterWorker.init();
-    await this.downloadWatcherWorker.init();
-
-    logger.log('All modules ready...');
+    await ensureCategories();
   }
 
   async upWatcher() {
