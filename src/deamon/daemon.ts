@@ -1,35 +1,28 @@
 import { DaemonAbstract } from '../core/abstract/daemon.abstract';
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
-import { Logger } from '../logger/logger';
+import { logger } from '../core/services/logger';
 import { DownloadSorterWorker } from '../workers/download-sorter.worker';
 import { FileSorter } from '../utils/file-sorter';
 import { DownloadWatcherWorker } from '../workers/download-watcher.worker';
+import { TagService } from '../core/services/tag-service';
 
 export class Daemon extends DaemonAbstract {
   protected readonly downloadSorterWorker: WorkerAbstract;
   protected readonly downloadWatcherWorker: WorkerAbstract;
   constructor() {
-    const logger = new Logger();
-    super(logger);
-    const sorter = new FileSorter(logger, this.config);
-    this.downloadSorterWorker = new DownloadSorterWorker(
-      logger,
-      this.config,
-      sorter,
-    );
-    this.downloadWatcherWorker = new DownloadWatcherWorker(
-      logger,
-      this.config,
-      sorter,
-    );
+    super();
+    const tagService = new TagService();
+    const sorter = new FileSorter(tagService);
+    this.downloadSorterWorker = new DownloadSorterWorker(sorter);
+    this.downloadWatcherWorker = new DownloadWatcherWorker(sorter);
   }
 
   protected async init(): Promise<void> {
-    this.logger.log('Initializing...');
+    logger.log('Initializing...');
     await this.downloadSorterWorker.init();
     await this.downloadWatcherWorker.init();
 
-    this.logger.log('All modules ready...');
+    logger.log('All modules ready...');
   }
 
   async upWatcher() {

@@ -1,15 +1,40 @@
 import { Config } from '../types/config.types';
 import { ConfigServiceValidation } from './config-service.validation';
-import { LoggerAbstract } from '../abstract/logger.abstract';
+import * as chokidar from 'chokidar';
+import { logger } from './logger';
 
 export class ConfigService {
-  private readonly config: Config;
+  private _config: Config | undefined;
 
-  constructor(private readonly logger: LoggerAbstract) {
-    this.config = new ConfigServiceValidation().validate() as Config;
+  constructor() {
+    this._config = new ConfigServiceValidation().validate() as Config;
+    this.hotReload();
+
+    if (typeof this._config === 'undefined') {
+      throw new Error('Config must be defined');
+    }
   }
 
   get(): Config {
-    return this.config;
+    return this._config as Config;
+  }
+
+  private hotReload(): void {
+    chokidar
+      .watch(__dirname + '../../../../public/config/config.json', {
+        atomic: true,
+        awaitWriteFinish: true,
+        ignoreInitial: true,
+      })
+      .on('change', () => {
+        try {
+          this._config = new ConfigServiceValidation().validate() as Config;
+          logger.log('Config reload successfully.');
+        } catch (e) {
+          logger.error(e as Error);
+        }
+      });
   }
 }
+
+export const config = new ConfigService().get();

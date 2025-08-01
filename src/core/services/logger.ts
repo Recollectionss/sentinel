@@ -1,8 +1,15 @@
 import callsites from 'callsites';
 
-export abstract class LoggerAbstract {
-  abstract log(message: string): void;
-  abstract error(error: Error, context?: string): void;
+export class Logger {
+  log(message: string) {
+    const callerName = this.getCallerName();
+    console.log(`[INFO] [${callerName}]: ${message}`);
+  }
+
+  error(error: Error) {
+    const callerName = this.getCallerName();
+    console.error(`[ERROR] [${callerName}]`, error.message);
+  }
 
   protected getCallerName(): string {
     const sites = callsites();
@@ -25,3 +32,5 @@ export abstract class LoggerAbstract {
     return 'unknown';
   }
 }
+
+export const logger = new Logger();

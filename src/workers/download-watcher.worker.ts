@@ -1,23 +1,19 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
-import { LoggerAbstract } from '../core/abstract/logger.abstract';
-import { Config } from '../core/types/config.types';
 import { FileSorter } from '../utils/file-sorter';
 import os from 'node:os';
 import fs, { Stats } from 'fs-extra';
 import path from 'node:path';
 import * as chokidar from 'chokidar';
+import { config } from '../core/services/config-service';
+import { logger } from '../core/services/logger';
 
 export class DownloadWatcherWorker extends WorkerAbstract {
   private readonly downloadsDir: string;
   private readonly targetBaseDir: string;
   private watcher: chokidar.FSWatcher | null = null;
 
-  constructor(
-    logger: LoggerAbstract,
-    private readonly config: Config,
-    private readonly fileSorter: FileSorter,
-  ) {
-    super(logger);
+  constructor(private readonly fileSorter: FileSorter) {
+    super();
     this.downloadsDir = os.homedir() + config.watch.main;
     this.targetBaseDir = `${this.downloadsDir}/Sentinel`;
   }
@@ -30,7 +26,7 @@ export class DownloadWatcherWorker extends WorkerAbstract {
     if (this.watcher) {
       return;
     }
-    this.logger.log('Start watching');
+    logger.log('Start watching');
     this.watcher = chokidar
       .watch(this.downloadsDir, {
         ignoreInitial: true,
@@ -42,12 +38,12 @@ export class DownloadWatcherWorker extends WorkerAbstract {
       });
   }
   async down() {
-    this.logger.log('Watcher stopped');
+    logger.log('Watcher stopped');
     await this.watcher?.close();
   }
 
   async ensureCategories(): Promise<void> {
-    for (const cat of Object.keys(this.config.sortedRules.rules)) {
+    for (const cat of Object.keys(config.sortedRules.rules)) {
       await fs.ensureDir(path.join(this.targetBaseDir, cat));
     }
   }
