@@ -25,6 +25,9 @@ export class DownloadWatcherWorker extends WorkerAbstract {
       })
       .on('add', async (filePath: string, stat: Stats | undefined) => {
         await this.fileSorter.sort(filePath, stat);
+      })
+      .on('addDir', async (filePath: string, stat: Stats | undefined) => {
+        await this.fileSorter.sort(filePath, stat);
       });
   }
 

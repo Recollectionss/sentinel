@@ -26,7 +26,10 @@ export class FileSorter {
     if (stat && stat.isDirectory()) {
       const contents: string[] = await fs.readdir(filePath);
 
-      if (contents.length == 0) {
+      if (
+        contents.length == 0 ||
+        (contents.length === 1 && contents.includes('.DS_Store'))
+      ) {
         await fs.remove(filePath);
         logger.log(`Removed empty directory: ${filePath}`);
       }

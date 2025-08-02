@@ -20,12 +20,13 @@ export class Logger {
       if (
         fileName &&
         !fileName.includes('node_modules') &&
-        !fileName.includes('Logger')
+        !fileName.includes('Logger') &&
+        !fileName.includes('logger.ts')
       ) {
         const functionName = site.getFunctionName() || 'anonymous';
         const typeName = site.getTypeName();
         const method = typeName ? `${typeName}.${functionName}` : functionName;
-        return `${method})`;
+        return `${method}`;
       }
     }
 
