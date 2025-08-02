@@ -2,7 +2,7 @@ import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import { FileSorter } from '../utils/file-sorter';
 import { Stats } from 'fs-extra';
 import * as chokidar from 'chokidar';
-import { config } from '../core/services/config-service';
+import { configService } from '../core/services/config-service';
 import { logger } from '../core/services/logger';
 
 export class DownloadWatcherWorker extends WorkerAbstract {
@@ -18,20 +18,23 @@ export class DownloadWatcherWorker extends WorkerAbstract {
     }
     logger.log('Start watching');
     this.watcher = chokidar
-      .watch([config.watch.main, ...config.watch.optional], {
-        ignoreInitial: true,
-        depth: 0,
-        persistent: true,
-        awaitWriteFinish: {
-          stabilityThreshold: 5000,
-          pollInterval: 100,
+      .watch(
+        [configService.get().watch.main, ...configService.get().watch.optional],
+        {
+          ignoreInitial: true,
+          depth: 0,
+          persistent: true,
+          awaitWriteFinish: {
+            stabilityThreshold: 5000,
+            pollInterval: 100,
+          },
         },
-      })
+      )
       .on('add', async (filePath: string, stat: Stats | undefined) => {
-        await this.fileSorter.sort(filePath, stat);
+        await this.fileSorter.moveFile(filePath, stat);
       })
       .on('addDir', async (filePath: string, stat: Stats | undefined) => {
-        await this.fileSorter.sort(filePath, stat);
+        await this.fileSorter.moveFile(filePath, stat);
       });
   }
 

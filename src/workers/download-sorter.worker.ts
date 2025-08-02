@@ -1,8 +1,10 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import fs from 'fs-extra';
 import { FileSorter } from '../utils/file-sorter';
-import { config } from '../core/services/config-service';
 import { logger } from '../core/services/logger';
+import os from 'node:os';
+import path from 'node:path';
+import { configService } from '../core/services/config-service';
 
 export class DownloadSorterWorker extends WorkerAbstract {
   constructor(private readonly fileSorter: FileSorter) {
@@ -10,11 +12,20 @@ export class DownloadSorterWorker extends WorkerAbstract {
   }
 
   async up() {
-    logger.log(`Start sorting ${config.watch.main}`);
-    fs.readdir(config.watch.main, (err, files) => {
+    this.readDir(configService.get().watch.main);
+  }
+
+  async readDirNew() {
+    this.readDir(path.resolve(os.homedir(), 'Downloads', 'Sentinel', 'New'));
+  }
+
+  private readDir(path: string) {
+    logger.log(`Start sorting ${configService.get().watch.main}`);
+    fs.readdir(path, (err, files) => {
       files.forEach((file) => {
+        console.log(file);
         fs.stat(file, (err, stats) => {
-          this.fileSorter.sort(`${config.watch.main}/${file}`, stats);
+          this.fileSorter.sort(`${path}/${file}`, stats);
         });
       });
     });
