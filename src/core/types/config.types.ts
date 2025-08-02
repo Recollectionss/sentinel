@@ -8,7 +8,7 @@ export type Config = {
 
 export type ConfigWatchT = {
   main: string;
-  optionals: string[];
+  optional: string[];
 };
 
 export type ConfigIgnoredT = {

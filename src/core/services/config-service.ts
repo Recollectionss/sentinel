@@ -23,7 +23,10 @@ export class ConfigService {
     chokidar
       .watch(__dirname + '../../../../public/config/config.json', {
         atomic: true,
-        awaitWriteFinish: true,
+        awaitWriteFinish: {
+          stabilityThreshold: 5000,
+          pollInterval: 100,
+        },
         ignoreInitial: true,
       })
       .on('change', () => {

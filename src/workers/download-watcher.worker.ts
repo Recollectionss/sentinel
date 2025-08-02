@@ -18,10 +18,14 @@ export class DownloadWatcherWorker extends WorkerAbstract {
     }
     logger.log('Start watching');
     this.watcher = chokidar
-      .watch(config.watch.main, {
+      .watch([config.watch.main, ...config.watch.optional], {
         ignoreInitial: true,
         depth: 0,
         persistent: true,
+        awaitWriteFinish: {
+          stabilityThreshold: 5000,
+          pollInterval: 100,
+        },
       })
       .on('add', async (filePath: string, stat: Stats | undefined) => {
         await this.fileSorter.sort(filePath, stat);
