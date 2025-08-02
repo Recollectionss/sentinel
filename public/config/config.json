@@ -1,6 +1,6 @@
 {
   "watch": {
-    "main": "/Downloads",
+    "main": "/Users/ilagoncarenko/Downloads",
     "optional" : []
   },
   "sortedRules": {

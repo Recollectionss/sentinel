@@ -1,18 +1,15 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import { FileSorter } from '../utils/file-sorter';
-import os from 'node:os';
 import { Stats } from 'fs-extra';
 import * as chokidar from 'chokidar';
 import { config } from '../core/services/config-service';
 import { logger } from '../core/services/logger';
 
 export class DownloadWatcherWorker extends WorkerAbstract {
-  private readonly downloadsDir: string;
   private watcher: chokidar.FSWatcher | null = null;
 
   constructor(private readonly fileSorter: FileSorter) {
     super();
-    this.downloadsDir = os.homedir() + config.watch.main;
   }
 
   async up() {
@@ -21,7 +18,7 @@ export class DownloadWatcherWorker extends WorkerAbstract {
     }
     logger.log('Start watching');
     this.watcher = chokidar
-      .watch(this.downloadsDir, {
+      .watch(config.watch.main, {
         ignoreInitial: true,
         depth: 0,
         persistent: true,

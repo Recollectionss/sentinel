@@ -1,4 +1,3 @@
-import os from 'node:os';
 import fs, { Stats } from 'fs-extra';
 import path from 'node:path';
 import { TagColors } from '../core/enum/tag-colors.enum';
@@ -7,12 +6,10 @@ import { config } from '../core/services/config-service';
 import { logger } from '../core/services/logger';
 
 export class FileSorter {
-  private readonly downloadsDir: string;
   private readonly targetBaseDir: string;
 
   constructor(private readonly tagService: TagService) {
-    this.downloadsDir = os.homedir() + config.watch.main;
-    this.targetBaseDir = `${this.downloadsDir}/Sentinel`;
+    this.targetBaseDir = `${config.watch.main}/Sentinel`;
   }
 
   async sort(filePath: string, stat: Stats | undefined): Promise<void> {
