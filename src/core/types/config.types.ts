@@ -19,6 +19,7 @@ export type ConfigIgnoredT = {
 export type ConfigSortedRulesT = {
   rules: ConfigFileRulesT;
   allowOtherDir: boolean;
+  allowDirNew: boolean;
 };
 
 export type ConfigFileRulesT = {

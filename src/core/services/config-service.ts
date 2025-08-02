@@ -2,11 +2,13 @@ import { Config } from '../types/config.types';
 import { ConfigServiceValidation } from './config-service.validation';
 import * as chokidar from 'chokidar';
 import { logger } from './logger';
+import { EventEmitter } from 'events';
 
-export class ConfigService {
+class ConfigService extends EventEmitter {
   private _config: Config | undefined;
 
   constructor() {
+    super();
     this._config = new ConfigServiceValidation().validate() as Config;
     this.hotReload();
 
@@ -33,6 +35,7 @@ export class ConfigService {
         try {
           this._config = new ConfigServiceValidation().validate() as Config;
           logger.log('Config reload successfully.');
+          this.emit(CONFIG_ALLOW_NEW_EVENT);
         } catch (e) {
           logger.error(e as Error);
         }
@@ -40,4 +43,6 @@ export class ConfigService {
   }
 }
 
-export const config = new ConfigService().get();
+export const configService = new ConfigService();
+
+export const CONFIG_ALLOW_NEW_EVENT = 'config:allow_new';
