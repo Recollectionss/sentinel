@@ -4,30 +4,37 @@
     "optional" : ["/Users/ilagoncarenko/Desktop"]
   },
   "sortedRules": {
+    "allowOtherDir": true,
+    "allowDirNew": false,
+    "useRegExp": false,
+    "regExpPriority": [],
     "rules": {
       "Image": {
         "color": "2",
-        "type": [".png", ".jpg", ".jpeg", ".gif", ".aviv"]
+        "type": [".png", ".jpg", ".jpeg", ".gif", ".avif"],
+        "regExp": []
       },
       "Video": {
         "color": "4",
-        "type": [".mp4",".mov",".avi",".mkv"]
+        "type": [".mp4",".mov",".avi",".mkv"],
+        "regExp": []
       },
       "Archive": {
         "color": "1",
-        "type": [".zip",".rar",".7z",".tar",".gz", ".exe"]
+        "type": [".zip",".rar",".7z",".tar",".gz", ".exe"],
+        "regExp": []
       },
       "Text": {
         "color": "7",
-        "type": [".pdf",".txt",".docs", ".docx", ".pages"]
+        "type": [".pdf",".txt",".docs", ".docx", ".pages"],
+        "regExp": []
       },
       "App": {
         "color": "3",
-        "type": [".app"]
+        "type": [".app"],
+        "regExp": []
       }
-    },
-    "allowOtherDir": true,
-    "allowDirNew": false
+    }
   },
   "ignored": {
     "always" : [".DS_Store", "Sentinel"],
