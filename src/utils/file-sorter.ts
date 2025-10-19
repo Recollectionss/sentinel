@@ -29,7 +29,7 @@ export class FileSorter {
 
       await this.move(filePath, targetPath, category, fileName);
     } catch (e) {
-      logger.error(new Error(`File: ${fileName}` + (e as Error).message));
+      logger.log(`File: ${fileName} ` + (e as Error).message);
     }
   }
 
@@ -48,7 +48,7 @@ export class FileSorter {
 
       await this.move(filePath, targetPath, category, fileName);
     } catch (e) {
-      logger.error(new Error(`File: ${fileName}` + (e as Error).message));
+      logger.log(`File: ${fileName}` + (e as Error).message);
     }
   }
 
@@ -69,7 +69,7 @@ export class FileSorter {
       logger.log(`Moved ${fileName} → ${category}`);
     } catch (err) {
       // TODO: need add functional for work with fail move file (for example if him already exist)
-      logger.error(Error(`failed to move: ${(err as Error).message}`));
+      logger.log(`failed to move: ${(err as Error).message}`);
     }
   }
 
