@@ -11,6 +11,13 @@ export class ConfigServiceValidation {
       'utf-8',
     );
     this.config = JSON.parse(raw) as Config;
+
+    // Compile all RegExp
+    Object.values(this.config.sortedRules.rules).forEach((rule) => {
+      rule.compiledRegExp = (rule.regExp || []).map(
+        (pattern) => new RegExp(pattern),
+      );
+    });
   }
 
   validate(): Config | Error {

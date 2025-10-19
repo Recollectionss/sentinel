@@ -25,7 +25,7 @@ export class DownloadSorterWorker extends WorkerAbstract {
       files.forEach((file) => {
         console.log(file);
         fs.stat(file, (err, stats) => {
-          this.fileSorter.sort(`${path}/${file}`, stats);
+          this.fileSorter.moveFile(`${path}/${file}`, stats);
         });
       });
     });

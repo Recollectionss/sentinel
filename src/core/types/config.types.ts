@@ -20,11 +20,15 @@ export type ConfigSortedRulesT = {
   rules: ConfigFileRulesT;
   allowOtherDir: boolean;
   allowDirNew: boolean;
+  useRegExp: boolean;
+  regExpPriority: string[];
 };
 
 export type ConfigFileRulesT = {
   [key: string]: {
     color: TagColors;
     type: string[];
+    regExp: string[];
+    compiledRegExp?: RegExp[];
   };
 };

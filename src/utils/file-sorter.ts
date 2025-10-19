@@ -12,27 +12,6 @@ export class FileSorter {
     this.targetBaseDir = `${configService.get().watch.main}/Sentinel`;
   }
 
-  async sort(filePath: string, stat: Stats | undefined): Promise<void> {
-    const fileName: string = path.basename(filePath);
-    try {
-      await this.validateFile(fileName, filePath, stat);
-
-      const category: string = this.getCategory(
-        path.extname(fileName).toLowerCase(),
-      );
-
-      const targetPath: string = path.join(
-        this.targetBaseDir,
-        category,
-        fileName,
-      );
-
-      await this.move(filePath, targetPath, category, fileName);
-    } catch (e) {
-      logger.log(`File: ${fileName} ` + (e as Error).message);
-    }
-  }
-
   async moveFile(filePath: string, stat: Stats | undefined): Promise<void> {
     const fileName: string = path.basename(filePath);
     try {
@@ -73,22 +52,51 @@ export class FileSorter {
     }
   }
 
-  protected getCategory(ext: string): string {
-    if (configService.get().sortedRules.allowDirNew) {
+  protected getCategory(file: string): string {
+    const sortedRules = configService.get().sortedRules;
+
+    if (sortedRules.allowDirNew) {
       return 'New';
     }
 
-    for (const cat of Object.keys(configService.get().sortedRules.rules)) {
-      if (configService.get().sortedRules.rules[cat].type.includes(ext)) {
+    if (sortedRules.useRegExp) {
+      const fileName = path.basename(file);
+      const checkedCats = new Set<string>();
+
+      if (sortedRules.regExpPriority.length > 0) {
+        for (const cat of sortedRules.regExpPriority) {
+          checkedCats.add(cat);
+          const rule = sortedRules.rules[cat];
+          for (const re of rule.compiledRegExp || []) {
+            if (re.test(fileName)) return cat;
+          }
+        }
+      }
+
+      for (const cat of Object.keys(sortedRules.rules)) {
+        if (checkedCats.has(cat)) continue;
+        for (const re of sortedRules.rules[cat].compiledRegExp || []) {
+          if (fileName && re.test(fileName)) return cat;
+        }
+      }
+    }
+
+    const ext = path.extname(file).toLowerCase();
+    for (const cat of Object.keys(sortedRules.rules)) {
+      if (
+        (sortedRules.rules[cat].type || [])
+          .map((e) => e.toLowerCase())
+          .includes(ext)
+      ) {
         return cat;
       }
     }
 
-    if (configService.get().sortedRules.allowOtherDir) {
+    if (sortedRules.allowOtherDir) {
       return 'Other';
     }
 
-    throw new Error(`Unknown extension: ${ext}`);
+    throw new Error(`Unknown extension: ${file}`);
   }
 
   private async validateFile(
