@@ -46,7 +46,6 @@ export class Queue<T extends unknown[]> {
       try {
         await this.handle(...args.data);
       } catch (e) {
-        //TODO: need add new try move file
         logger.error(e as Error);
 
         if (args.tries < 3) {
