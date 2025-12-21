@@ -1,14 +1,19 @@
 import { logger } from '../core/services/logger';
 
+type QueueItem<T extends unknown[]> = {
+  data: T;
+  tries: number;
+};
+
 export class Queue<T extends unknown[]> {
-  private queue: T[] = [];
+  private queue: QueueItem<T>[] = [];
   private resolver?: () => void;
   private running: boolean = false;
 
   constructor(private handle: (...args: T) => Promise<void>) {}
 
   add(...args: T): void {
-    this.queue.push(args);
+    this.queue.push({ data: args, tries: 0 });
 
     if (this.resolver) {
       this.resolver();
@@ -39,10 +44,16 @@ export class Queue<T extends unknown[]> {
       }
 
       try {
-        await this.handle(...args);
+        await this.handle(...args.data);
       } catch (e) {
         //TODO: need add new try move file
         logger.error(e as Error);
+
+        if (args.tries < 3) {
+          this.queue.push({ data: args.data, tries: args.tries + 1 });
+        } else {
+          logger.log(`Cannot move ${args.data} with 3 tries`);
+        }
       }
     }
   }
