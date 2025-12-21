@@ -7,16 +7,22 @@ import { DownloadWatcherWorker } from '../workers/download-watcher.worker';
 import { TagService } from '../core/services/tag-service';
 import { ensureCategories } from '../utils/ensure-categories';
 import { CronSchedule } from '../cron/cron-schedule';
+import { Queue } from '../utils/queue';
+import { Stats } from 'fs-extra';
 
 export class Daemon extends DaemonAbstract {
   protected readonly downloadSorterWorker: WorkerAbstract;
   protected readonly downloadWatcherWorker: WorkerAbstract;
   protected readonly cronSchedule: CronSchedule;
+  protected readonly sortingQueue: Queue<
+    [filePath: string, stat: Stats | undefined]
+  >;
 
   constructor() {
     super();
     const tagService = new TagService();
     const sorter = new FileSorter(tagService);
+    this.sortingQueue = new Queue(sorter.moveFile.bind(sorter));
     this.downloadSorterWorker = new DownloadSorterWorker(sorter);
     this.downloadWatcherWorker = new DownloadWatcherWorker(sorter);
     this.cronSchedule = new CronSchedule(
@@ -27,13 +33,14 @@ export class Daemon extends DaemonAbstract {
   protected async init(): Promise<void> {
     logger.log('Initializing...');
     await ensureCategories();
+    this.sortingQueue.start();
   }
 
-  async upWatcher() {
+  async upWatcher(): Promise<void> {
     await this.downloadWatcherWorker.up();
   }
 
-  async downWatcher() {
+  async downWatcher(): Promise<void> {
     await this.downloadWatcherWorker.down();
   }
 

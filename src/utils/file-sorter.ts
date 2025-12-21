@@ -13,21 +13,17 @@ export class FileSorter {
   }
 
   async moveFile(filePath: string, stat: Stats | undefined): Promise<void> {
-    const fileName: string = path.basename(filePath);
+    const fileName = path.basename(filePath);
+
     try {
       await this.validateFile(fileName, filePath, stat);
 
-      const category: string = this.getCategory(fileName);
-
-      const targetPath: string = path.join(
-        this.targetBaseDir,
-        category,
-        fileName,
-      );
+      const category = this.getCategory(fileName);
+      const targetPath = path.join(this.targetBaseDir, category, fileName);
 
       await this.move(filePath, targetPath, category, fileName);
     } catch (e) {
-      logger.log(`File: ${fileName}` + (e as Error).message);
+      logger.log(`File: ${fileName} ${(e as Error).message}`);
     }
   }
 
@@ -37,46 +33,39 @@ export class FileSorter {
     category: string,
     fileName: string,
   ): Promise<void> {
-    try {
-      const color: TagColors = configService.get().sortedRules.rules[category]
-        ?.color
-        ? configService.get().sortedRules.rules[category].color
-        : TagColors.NONE;
-      await this.tagService.applyTag(filePath, category, +color);
+    const color: TagColors =
+      configService.get().sortedRules.rules[category]?.color ?? TagColors.NONE;
 
-      await fs.move(filePath, targetPath, { overwrite: false });
-      logger.log(`Moved ${fileName} → ${category}`);
-    } catch (err) {
-      // TODO: need add functional for work with fail move file (for example if him already exist)
-      logger.log(`failed to move: ${(err as Error).message}`);
-    }
+    await fs.move(filePath, targetPath, { overwrite: false });
+
+    setTimeout(
+      () => this.tagService.applyTag(targetPath, category, +color),
+      200,
+    );
+
+    logger.log(`Moved ${fileName} → ${category}`);
   }
 
   protected getCategory(file: string): string {
     const sortedRules = configService.get().sortedRules;
 
-    if (sortedRules.allowDirNew) {
-      return 'New';
-    }
+    if (sortedRules.allowDirNew) return 'New';
 
     if (sortedRules.useRegExp) {
       const fileName = path.basename(file);
       const checkedCats = new Set<string>();
 
-      if (sortedRules.regExpPriority.length > 0) {
-        for (const cat of sortedRules.regExpPriority) {
-          checkedCats.add(cat);
-          const rule = sortedRules.rules[cat];
-          for (const re of rule.compiledRegExp || []) {
-            if (re.test(fileName)) return cat;
-          }
+      for (const cat of sortedRules.regExpPriority) {
+        checkedCats.add(cat);
+        for (const re of sortedRules.rules[cat].compiledRegExp || []) {
+          if (re.test(fileName)) return cat;
         }
       }
 
       for (const cat of Object.keys(sortedRules.rules)) {
         if (checkedCats.has(cat)) continue;
         for (const re of sortedRules.rules[cat].compiledRegExp || []) {
-          if (fileName && re.test(fileName)) return cat;
+          if (re.test(fileName)) return cat;
         }
       }
     }
@@ -92,9 +81,7 @@ export class FileSorter {
       }
     }
 
-    if (sortedRules.allowOtherDir) {
-      return 'Other';
-    }
+    if (sortedRules.allowOtherDir) return 'Other';
 
     throw new Error(`Unknown extension: ${file}`);
   }
@@ -112,10 +99,10 @@ export class FileSorter {
     }
 
     if (stat?.isDirectory()) {
-      const contents: string[] = await fs.readdir(filePath);
+      const contents = await fs.readdir(filePath);
 
       if (
-        contents.length == 0 ||
+        contents.length === 0 ||
         (contents.length === 1 && contents.includes('.DS_Store'))
       ) {
         await fs.remove(filePath);
