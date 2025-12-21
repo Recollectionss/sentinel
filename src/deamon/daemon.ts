@@ -23,8 +23,8 @@ export class Daemon extends DaemonAbstract {
     const tagService = new TagService();
     const sorter = new FileSorter(tagService);
     this.sortingQueue = new Queue(sorter.moveFile.bind(sorter));
-    this.downloadSorterWorker = new DownloadSorterWorker(sorter);
-    this.downloadWatcherWorker = new DownloadWatcherWorker(sorter);
+    this.downloadSorterWorker = new DownloadSorterWorker(this.sortingQueue);
+    this.downloadWatcherWorker = new DownloadWatcherWorker(this.sortingQueue);
     this.cronSchedule = new CronSchedule(
       this.downloadSorterWorker as DownloadSorterWorker,
     );

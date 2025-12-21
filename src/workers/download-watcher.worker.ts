@@ -1,14 +1,18 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
-import { FileSorter } from '../utils/file-sorter';
 import { Stats } from 'fs-extra';
 import * as chokidar from 'chokidar';
 import { configService } from '../core/services/config-service';
 import { logger } from '../core/services/logger';
+import { Queue } from '../utils/queue';
 
 export class DownloadWatcherWorker extends WorkerAbstract {
   private watcher: chokidar.FSWatcher | null = null;
 
-  constructor(private readonly fileSorter: FileSorter) {
+  constructor(
+    private readonly sortingQueue: Queue<
+      [filePath: string, stat: Stats | undefined]
+    >,
+  ) {
     super();
   }
 
@@ -31,10 +35,10 @@ export class DownloadWatcherWorker extends WorkerAbstract {
         },
       )
       .on('add', async (filePath: string, stat: Stats | undefined) => {
-        await this.fileSorter.moveFile(filePath, stat);
+        this.sortingQueue.add(filePath, stat);
       })
       .on('addDir', async (filePath: string, stat: Stats | undefined) => {
-        await this.fileSorter.moveFile(filePath, stat);
+        this.sortingQueue.add(filePath, stat);
       });
   }
 

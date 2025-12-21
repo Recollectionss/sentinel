@@ -1,13 +1,17 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
-import fs from 'fs-extra';
-import { FileSorter } from '../utils/file-sorter';
+import fs, { Stats } from 'fs-extra';
 import { logger } from '../core/services/logger';
 import os from 'node:os';
 import path from 'node:path';
 import { configService } from '../core/services/config-service';
+import { Queue } from '../utils/queue';
 
 export class DownloadSorterWorker extends WorkerAbstract {
-  constructor(private readonly fileSorter: FileSorter) {
+  constructor(
+    private readonly sortingQueue: Queue<
+      [filePath: string, stat: Stats | undefined]
+    >,
+  ) {
     super();
   }
 
@@ -25,7 +29,7 @@ export class DownloadSorterWorker extends WorkerAbstract {
       files.forEach((file) => {
         console.log(file);
         fs.stat(file, (err, stats) => {
-          this.fileSorter.moveFile(`${path}/${file}`, stats);
+          this.sortingQueue.add(`${path}/${file}`, stats);
         });
       });
     });
