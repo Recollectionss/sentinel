@@ -31,7 +31,7 @@ class ConfigService extends EventEmitter {
         },
         ignoreInitial: true,
       })
-      .on('change', () => {
+      .on('change', (): void => {
         try {
           this._config = new ConfigServiceValidation().validate() as Config;
           logger.log('Config reload successfully.');

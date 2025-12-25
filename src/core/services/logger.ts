@@ -1,21 +1,21 @@
 import callsites from 'callsites';
 
 export class Logger {
-  log(message: string) {
-    const callerName = this.getCallerName();
+  log(message: string): void {
+    const callerName: string = this.getCallerName();
     console.log(`[INFO] [${callerName}]: ${message}`);
   }
 
-  error(error: Error) {
-    const callerName = this.getCallerName();
+  error(error: Error): void {
+    const callerName: string = this.getCallerName();
     console.error(`[ERROR] [${callerName}]`, error.message);
   }
 
   protected getCallerName(): string {
-    const sites = callsites();
+    const sites: callsites.CallSite[] = callsites();
 
     for (const site of sites) {
-      const fileName = site.getFileName();
+      const fileName: string | null = site.getFileName();
 
       if (
         fileName &&
@@ -23,9 +23,9 @@ export class Logger {
         !fileName.includes('Logger') &&
         !fileName.includes('logger.ts')
       ) {
-        const functionName = site.getFunctionName() || 'anonymous';
-        const typeName = site.getTypeName();
-        const method = typeName ? `${typeName}.${functionName}` : functionName;
+        const functionName: string = site.getFunctionName() || 'anonymous';
+        const typeName: string | null = site.getTypeName();
+        const method: string = typeName ? `${typeName}.${functionName}` : functionName;
         return `${method}`;
       }
     }
