@@ -1,4 +1,4 @@
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 
 type QueueItem<T extends unknown[]> = {
   data: T;

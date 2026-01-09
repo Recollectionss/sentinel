@@ -2,7 +2,7 @@ import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import { Stats } from 'fs-extra';
 import * as chokidar from 'chokidar';
 import { configService } from '../core/services/config-service';
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 import { Queue } from '../utils/queue';
 
 export class DownloadWatcherWorker extends WorkerAbstract {

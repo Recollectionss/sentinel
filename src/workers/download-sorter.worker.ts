@@ -1,6 +1,6 @@
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
 import fs, { Stats } from 'fs-extra';
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 import os from 'node:os';
 import path from 'node:path';
 import { configService } from '../core/services/config-service';

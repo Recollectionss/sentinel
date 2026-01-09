@@ -1,4 +1,4 @@
-import { logger } from '../services/logger';
+import { logger } from '../services/logs/logger';
 
 export abstract class DaemonAbstract {
   protected constructor() {}

@@ -3,7 +3,7 @@ import path from 'node:path';
 import { TagColors } from '../core/enum/tag-colors.enum';
 import { TagService } from '../core/services/tag-service';
 import { configService } from '../core/services/config-service';
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 
 export class FileSorter {
   private readonly targetBaseDir: string;

@@ -4,7 +4,7 @@ import {
 } from '../core/services/config-service';
 import nodeCron from 'node-cron';
 import { DownloadSorterWorker } from '../workers/download-sorter.worker';
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 
 export class CronSchedule {
   constructor(private readonly downloadSorter: DownloadSorterWorker) {

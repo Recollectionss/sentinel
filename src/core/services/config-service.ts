@@ -1,7 +1,7 @@
 import { Config } from '../types/config.types';
 import { ConfigServiceValidation } from './config-service.validation';
 import * as chokidar from 'chokidar';
-import { logger } from './logger';
+import { logger } from './logs/logger';
 import { EventEmitter } from 'events';
 
 class ConfigService extends EventEmitter {

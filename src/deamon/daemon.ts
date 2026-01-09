@@ -1,6 +1,6 @@
 import { DaemonAbstract } from '../core/abstract/daemon.abstract';
 import { WorkerAbstract } from '../core/abstract/worker.abstract';
-import { logger } from '../core/services/logger';
+import { logger } from '../core/services/logs/logger';
 import { DownloadSorterWorker } from '../workers/download-sorter.worker';
 import { FileSorter } from '../utils/file-sorter';
 import { DownloadWatcherWorker } from '../workers/download-watcher.worker';

@@ -1,6 +1,9 @@
 import callsites from 'callsites';
+import { loggerSaverService, LoggerSaverService } from './logger-saver-service';
 
 export class Logger {
+  constructor(private readonly loggerSaverService: LoggerSaverService) {}
+
   log(message: string): void {
     const callerName: string = this.getCallerName();
     console.log(`[INFO] [${callerName}]: ${message}`);
@@ -9,6 +12,13 @@ export class Logger {
   error(error: Error): void {
     const callerName: string = this.getCallerName();
     console.error(`[ERROR] [${callerName}]`, error.message);
+    this.loggerSaverService
+      .saveLogs({
+        error_type: typeof error,
+        message: error.message,
+        caller_name: callerName,
+      })
+      .catch((err: Error) => console.log(`[ERROR] [${Logger.name}]`, err));
   }
 
   protected getCallerName(): string {
@@ -25,7 +35,9 @@ export class Logger {
       ) {
         const functionName: string = site.getFunctionName() || 'anonymous';
         const typeName: string | null = site.getTypeName();
-        const method: string = typeName ? `${typeName}.${functionName}` : functionName;
+        const method: string = typeName
+          ? `${typeName}.${functionName}`
+          : functionName;
         return `${method}`;
       }
     }
@@ -34,4 +46,4 @@ export class Logger {
   }
 }
 
-export const logger = new Logger();
+export const logger = new Logger(loggerSaverService);
