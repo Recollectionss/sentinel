@@ -36,7 +36,20 @@ export class FileSorter {
     const color: TagColors =
       configService.get().sortedRules.rules[category]?.color ?? TagColors.NONE;
 
-    await fs.move(filePath, targetPath, { overwrite: false });
+    try {
+      await fs.move(filePath, targetPath, { overwrite: false });
+    } catch {
+      const ext = path.extname(fileName);
+      const base = path.basename(fileName, ext);
+      const newTargetPath = path.join(
+        targetPath,
+        category,
+        `${base}-copy${ext}`,
+      );
+
+      logger.log(`Rename file from '${fileName}' to '${base}-copy${ext}'`);
+      await fs.move(filePath, newTargetPath, { overwrite: false });
+    }
 
     setTimeout(
       () => this.tagService.applyTag(targetPath, category, +color),
