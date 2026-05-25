@@ -5,7 +5,7 @@
   },
   "sortedRules": {
     "allowOtherDir": true,
-    "allowDirNew": false,
+    "allowDirNew": true,
     "useRegExp": false,
     "regExpPriority": [],
     "rules": {

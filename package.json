@@ -7,10 +7,16 @@
     "build": "tsc",
     "start:prod": "node ./dist/index.js",
     "start:dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "test": "jest --runInBand",
+    "test:watch": "jest --watch"
+  },
+  "bin": {
+    "sentinel": "./dist/cli/cli.js"
   },
   "dependencies": {
     "chokidar": "^4.0.3",
+    "commander": "^14.0.3",
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-import": "^2.32.0",
@@ -23,10 +29,13 @@
   "devDependencies": {
     "@eslint/js": "^9.29.0",
     "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^30.0.0",
     "@typescript-eslint/eslint-plugin": "^8.36.0",
     "@typescript-eslint/parser": "^8.36.0",
     "globals": "^16.2.0",
-    "typescript": "^5.5.3"
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^5.8.3"
   },
   "private": true
 }
